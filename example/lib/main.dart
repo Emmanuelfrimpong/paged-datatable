@@ -89,6 +89,7 @@ class _MainViewState extends State<MainView> {
       child: PagedDataTable<String, int, Post>(
         rowsSelectable: true,
         theme: theme,
+        
         idGetter: (post) => post.id,
         controller: tableController,
         fetchPage: (pageToken, pageSize, sortBy, filtering) async {
@@ -113,6 +114,7 @@ class _MainViewState extends State<MainView> {
             title: "Identificator",
             cellBuilder: (item) => Text(item.id.toString()),
             sizeFactor: .05,
+            
           ),
           TableColumn(
               title: "Author", cellBuilder: (item) => Text(item.author)),

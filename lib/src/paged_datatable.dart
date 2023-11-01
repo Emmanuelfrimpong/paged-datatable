@@ -31,8 +31,8 @@ part 'types.dart';
 /// A paginated DataTable that allows page caching and filtering
 /// [TKey] is the type of the page token
 /// [TResult] is the type of data the data table will show.
-class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TResult extends Object>
-    extends StatelessWidget {
+class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
+    TResult extends Object> extends StatelessWidget {
   /// The callback that gets executed when a page is fetched.
   final FetchCallback<TKey, TResult> fetchPage;
 
@@ -102,7 +102,8 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<_PagedDataTableState<TKey, TResultId, TResult>>(
+    return ChangeNotifierProvider<
+        _PagedDataTableState<TKey, TResultId, TResult>>(
       create: (context) => _PagedDataTableState(
           columns: columns,
           rowsSelectable: rowsSelectable,
@@ -113,9 +114,11 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
           initialPage: initialPage,
           refreshListener: refreshListener),
       builder: (context, widget) {
-        var state = context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
-        final localTheme =
-            PagedDataTableTheme.maybeOf(context) ?? theme ?? _kDefaultPagedDataTableTheme;
+        var state =
+            context.read<_PagedDataTableState<TKey, TResultId, TResult>>();
+        final localTheme = PagedDataTableTheme.maybeOf(context) ??
+            theme ??
+            _kDefaultPagedDataTableTheme;
 
         Widget child = Material(
           color: localTheme.backgroundColor,
@@ -123,32 +126,58 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
           textStyle: localTheme.textStyle,
           shape: theme?.border,
           child: LayoutBuilder(builder: (context, constraints) {
-            var width = constraints.maxWidth - (columns.length * 32) - (rowsSelectable ? 32 : 0);
+            var width = constraints.maxWidth -
+                (columns.length * 32) -
+                (rowsSelectable ? 32 : 0);
             state.availableWidth = width;
             return Column(
               children: [
                 /* FILTER TAB */
-                if (header != null || menu != null || state.filters.isNotEmpty) ...[
-                  _PagedDataTableFilterTab<TKey, TResultId, TResult>(menu, header),
+                if (header != null ||
+                    menu != null ||
+                    state.filters.isNotEmpty) ...[
+                  _PagedDataTableFilterTab<TKey, TResultId, TResult>(
+                      menu, header),
                   Divider(height: 0, color: localTheme.dividerColor),
                 ],
 
                 /* HEADER ROW */
-                _PagedDataTableHeaderRow<TKey, TResultId, TResult>(rowsSelectable, width),
-                Divider(height: 0, color: localTheme.dividerColor),
 
                 /* ITEMS */
                 Expanded(
-                  child: _PagedDataTableRows<TKey, TResultId, TResult>(
-                      rowsSelectable,
-                      customRowBuilder ??
-                          CustomRowBuilder<TResult>(
-                              builder: (context, item) =>
-                                  throw UnimplementedError("This does not build nothing"),
-                              shouldUse: (context, item) => false),
-                      noItemsFoundBuilder,
-                      errorBuilder,
-                      width),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: constraints.maxWidth * 2,
+                          child: Column(
+                            children: [
+                              _PagedDataTableHeaderRow<TKey, TResultId,
+                                  TResult>(rowsSelectable, width),
+                              Divider(
+                                  height: 0, color: localTheme.dividerColor),
+                              Expanded(
+                                child: _PagedDataTableRows<TKey, TResultId,
+                                        TResult>(
+                                    rowsSelectable,
+                                    customRowBuilder ??
+                                        CustomRowBuilder<TResult>(
+                                            builder: (context, item) =>
+                                                throw UnimplementedError(
+                                                    "This does not build nothing"),
+                                            shouldUse: (context, item) =>
+                                                false),
+                                    noItemsFoundBuilder,
+                                    errorBuilder,
+                                    width),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
 
                 /* FOOTER */
@@ -164,10 +193,14 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable, TRes
         // apply configuration to this widget only
         if (theme != null) {
           child = PagedDataTableTheme(data: theme!, child: child);
-          assert(theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
+          assert(
+              theme!.rowColors != null ? theme!.rowColors!.length == 2 : true,
               "rowColors must contain exactly two colors");
         } else {
-          assert(localTheme.rowColors != null ? localTheme.rowColors!.length == 2 : true,
+          assert(
+              localTheme.rowColors != null
+                  ? localTheme.rowColors!.length == 2
+                  : true,
               "rowColors must contain exactly two colors");
         }
 
