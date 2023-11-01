@@ -102,6 +102,9 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
 
   @override
   Widget build(BuildContext context) {
+     final localTheme = PagedDataTableTheme.maybeOf(context) ??
+        theme ??
+        _kDefaultPagedDataTableTheme;
     return ChangeNotifierProvider<
         _PagedDataTableState<TKey, TResultId, TResult>>(
       create: (context) => _PagedDataTableState(
@@ -110,6 +113,7 @@ class PagedDataTable<TKey extends Comparable, TResultId extends Comparable,
           filters: filters,
           idGetter: idGetter,
           controller: controller,
+           pageSize: localTheme.configuration.initialPageSize,
           fetchCallback: fetchPage,
           initialPage: initialPage,
           refreshListener: refreshListener),
